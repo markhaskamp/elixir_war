@@ -12,7 +12,9 @@ defmodule Player do
       {tag, :play_a_card} ->
           top_card = Agent.get(tag, fn(cards) -> hd(cards) end)
           Agent.update(tag, fn(cards) -> tl(cards) end)
-          IO.puts "top_card: #{top_card}"
+
+          pTable = Agent.get(TablePid, fn(p) -> p end)
+          send pTable, {tag, :card_played, top_card}
     end
 
     _receive_loop
