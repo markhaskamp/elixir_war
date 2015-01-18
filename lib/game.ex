@@ -7,8 +7,8 @@ defmodule Game do
     table_pid = spawn(Table, :init, [])
     Agent.start(fn -> table_pid end, name: TablePid)
 
-    Agent.start(fn -> [16,17,18,19]     end, name: :p1)
-    Agent.start(fn -> [11,12,13,14] end, name: :p2)
+    Agent.start(fn -> [16,17,13,19] end, name: :p1)
+    Agent.start(fn -> [11,12,18,14] end, name: :p2)
 
     p1 = spawn(Player, :ready, [])
     p2 = spawn(Player, :ready, [])
