@@ -4,20 +4,25 @@ import Table
 defmodule Game do
 
   def init do
-    pTable = spawn(Table, :init, [])
-    Agent.start(fn -> pTable end, name: TablePid)
+    table_pid = spawn(Table, :init, [])
+    Agent.start(fn -> table_pid end, name: TablePid)
 
-    p1 = spawn(Player, :init, [{:p1, [1,2,3,4]}])
-    p2 = spawn(Player, :init, [{:p2, [11,12,13,14]}])
+    Agent.start(fn -> [6,7,8,9]     end, name: :p1)
+    Agent.start(fn -> [11,12,13,14] end, name: :p2)
 
-    Agent.start(fn -> [{:p1,p1}, {:p2,p2}] end, name: Players)
+    p1 = spawn(Player, :ready, [])
+    p2 = spawn(Player, :ready, [])
+
+    p1map = %{:pid => p1, :agent_tag => :p1}
+    p2map = %{:pid => p2, :agent_tag => :p2}
+
+    Agent.start(fn -> [p1map, p2map] end, name: Players)
   end
 
   def start do
     Agent.get(Players, fn(list) -> list end)
-
     |>
-    Enum.map (&(send(elem(&1,1), {elem(&1,0), :play_a_card})))
+    Enum.map (fn(m) -> send(m[:pid], {m, :play_card}) end)
   end
 
 end
