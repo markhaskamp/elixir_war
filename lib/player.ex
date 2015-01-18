@@ -8,7 +8,6 @@ defmodule Player do
   defp _receive_loop do
     receive do
       {map, :show_cards} ->
-        IO.puts "eddie would go"
         agent_tag = map[:agent_tag]
         IO.puts(inspect(Agent.get(agent_tag, fn(cards) -> cards end)))
 

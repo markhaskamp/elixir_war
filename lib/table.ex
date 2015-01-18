@@ -9,17 +9,12 @@ defmodule Table do
   defp _receive_loop do
     receive do
       {:card_played, map, top_card} ->
-        IO.puts "I have a card on the table: #{top_card}"
         _addCardToTable(map, top_card)
 
         if _everyone_has_played do
-          IO.puts "Everyone has played"
-
           player_map = _get_winning_player_map
-          IO.puts("winning player_map: #{inspect(player_map)}")
-
           cards = _collect_all_cards_on_table
-          IO.puts("new cards: #{cards}")
+          _clear_table
 
           send(player_map[:pid], {:add_cards, player_map[:agent_tag], cards})
         end
@@ -58,6 +53,10 @@ defmodule Table do
 
     |>
     Enum.reduce([], fn(card, acc) -> [elem(card,0) | acc] end)
+  end
+
+  defp _clear_table do
+    Agent.update(CardsPlayed, fn(cards) -> [] end)
   end
 end
 
